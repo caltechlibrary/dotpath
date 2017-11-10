@@ -27,6 +27,8 @@ import (
 	"strings"
 )
 
+const Version = `v0.0.1`
+
 // JSONDecode decodes JSON using the json.Number instead of float64 for numeric values.
 func JSONDecode(buf []byte) (interface{}, error) {
 	var result interface{}
