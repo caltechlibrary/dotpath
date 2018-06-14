@@ -10,6 +10,8 @@ func TestToLabels(t *testing.T) {
 		".Column_1":     "Column_1",
 		".paths[:]":     "paths range",
 		".dirs[:].size": "dirs range size",
+		".titles[0]":    "title 0",
+		".titles[0:1]":  "title 0 to 1",
 	}
 	for input, expected := range data {
 		result := ToLabel(input)
