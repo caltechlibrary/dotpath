@@ -1,0 +1,33 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "description": "A go package for evaluating dot path notation and JSON objects to extract values.",
+    "name": "dotpath",
+    "codeRepository": "https://github.com/caltechlibrary/dotpath",
+    "issueTracker": "https://github.com/caltechlibrary/dotpath/issues",
+    "license": "https://data.caltech.edu/license",
+    "version": "0.0.3",
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Robert",
+            "familyName": "Doiel",
+            "affiliation": "Caltech Library",
+            "email": "rsdoiel@caltech.edu",
+            "@id": "https://orcid.org/0000-0003-0900-6903"
+        }
+    ],
+    "developmentStatus": "active",
+    "downloadUrl": "https://github.com/caltechlibrary/dotpath/releases",
+    "keywords": [
+        "GitHub",
+        "metadata",
+        "data",
+        "software",
+        "json"
+    ],
+    "maintainer": "https://orcid.org/0000-0003-0900-6903",
+    "programmingLanguage": [
+        "Go"
+    ]
+}
