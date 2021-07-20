@@ -4,12 +4,20 @@
 
 PROJECT = dotpath
 
-VERSION = $(shell grep -m1 "Version = " $(PROJECT).go | cut -d\` -f 2)
+VERSION = $(shell jq .version codemeta.json | cut -d\"  -f 2)
 
 BRANCH = $(shell git branch | grep "* " | cut -d\   -f 2)
 
+build: version.go
+
+version.go: .FORCE
+	@echo "package $(PROJECT)" >version.go
+	@echo '' >>version.go
+	@echo 'const Version = "v$(VERSION)"' >>version.go
+	@echo '' >>version.go
+	@if [ -f bin/codemeta ]; then ./bin/codemeta; fi
+
 test:
-	cd numbers && go test
 	go test
 
 status:
@@ -26,3 +34,4 @@ publish:
 	./mk-website.bash
 	./publish.bash
 
+.FORCE:

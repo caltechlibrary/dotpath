@@ -475,5 +475,47 @@ func TestEval(t *testing.T) {
 		t.Errorf("Expected data to have %q, %T -> %+v", p, data, data)
 		t.FailNow()
 	}
+}
 
+func TestLinkedData(t *testing.T) {
+	data := []byte(`{
+		"familyName": "Doiel",
+		"givenName": "Robert",
+		"@id": "https://orcid.org/0000-0003-0900-6903"
+}`)
+	link := `.givenName`
+	expected := `Robert`
+	got, err := EvalJSON(link, data)
+	if err != nil {
+		t.Errorf("EvalJSON failed for %q, %s", link, err)
+		t.FailNow()
+	}
+	if expected != got {
+		t.Errorf("expected %q, got %q", expected, got)
+		t.FailNow()
+	}
+
+	link = `.familyName`
+	expected = `Doiel`
+	got, err = EvalJSON(link, data)
+	if err != nil {
+		t.Errorf("EvalJSON failed for %q, %s", link, err)
+		t.FailNow()
+	}
+	if expected != got {
+		t.Errorf("expected %q, got %q", expected, got)
+		t.FailNow()
+	}
+
+	link = `.["@id"]`
+	expected = "https://orcid.org/0000-0003-0900-6903"
+	got, err = EvalJSON(link, data)
+	if err != nil {
+		t.Errorf("EvalJSON failed for %q, %s", link, err)
+		t.FailNow()
+	}
+	if expected != got {
+		t.Errorf("expected %q, got %q", expected, got)
+		t.FailNow()
+	}
 }
