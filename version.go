@@ -1,4 +1,4 @@
 package dotpath
 
-const Version = "v0.0.3"
+const Version = "0.0.3"
 
