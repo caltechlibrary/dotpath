@@ -1,3 +1,7 @@
+DEPRECATED: This packaged as been merged into the Dataset Project as a submodule.
+=================================================================================
+
+See https://github.com/caltechlibrary/dataset for actively developed version.
 
 # dotpath package
 
