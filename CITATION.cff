@@ -1,10 +1,19 @@
-
-cff-version: 1.1.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-authors:
-   - family-names: Doiel
-     given-names: Robert
-     orcid: https://orcid.org/0000-0003-0900-6903
-version: 0.0.3
 title: dotpath
-date-released: 2021-07-27
+authors:
+  - family-names: Doiel
+    given-names: Robert
+    orcid: https://orcid.org/0000-0003-0900-6903
+abstract: A go package for evaluating dot path notation and JSON objects to extract values.
+repository-code: "https://github.com/caltechlibrary/dotpath"
+type: software
+version: 0.0.4
+license-url: "https://data.caltech.edu/license"
+keywords:
+  - GitHub
+  - metadata
+  - data
+  - software
+  - json
+date-released: 2022-08-17

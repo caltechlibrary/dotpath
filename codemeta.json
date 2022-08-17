@@ -6,13 +6,16 @@
     "codeRepository": "https://github.com/caltechlibrary/dotpath",
     "issueTracker": "https://github.com/caltechlibrary/dotpath/issues",
     "license": "https://data.caltech.edu/license",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "author": [
         {
             "@type": "Person",
             "givenName": "Robert",
             "familyName": "Doiel",
-            "affiliation": "Caltech Library",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Caltech Library"
+            },
             "email": "rsdoiel@caltech.edu",
             "@id": "https://orcid.org/0000-0003-0900-6903"
         }
