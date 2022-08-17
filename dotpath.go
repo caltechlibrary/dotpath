@@ -4,7 +4,7 @@
 //
 // @author R. S. Doiel, <rsdoiel@library.caltech.edu>
 //
-// Copyright (c) 2017, Caltech
+// Copyright (c) 2022, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,8 @@ import (
 	"strings"
 )
 
-// JSONDecode decodes JSON using the json.Number instead of float64 for numeric values.
-func JSONDecode(buf []byte) (interface{}, error) {
+// decodeBuf decodes JSON using the json.Number instead of float64 for numeric values.
+func decodeBuf(buf []byte) (interface{}, error) {
 	var result interface{}
 	d := json.NewDecoder(bytes.NewReader(buf))
 	d.UseNumber()
@@ -40,15 +40,15 @@ func JSONDecode(buf []byte) (interface{}, error) {
 
 // EvalJSON takes a dot path plus JSON encoded as byte array and returns the value in the dot path or error
 func EvalJSON(p string, src []byte) (interface{}, error) {
-	data, err := JSONDecode(src)
+	data, err := decodeBuf(src)
 	if err != nil {
 		return nil, err
 	}
 	return Eval(p, data)
 }
 
-// Eval takes a dot path and interface (either a map[string]interface{} or []interface) and
-// returns a value from the dot ath or error
+// Eval takes a dot path and interface (either a map[string]interface{}
+// or []interface) and returns a value from the dot path or error
 func Eval(p string, data interface{}) (interface{}, error) {
 	// Parse the dotpath into an array representing map keys or array indexes
 	if p == "." {
