@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>dotpath</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<nav>
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="index.html">README</a></li>
+    <li><a href="LICENSE">LICENSE</a></li>
+    <li><a href="user_manual.html">User Manual</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="search.html">Search</a></li>
+    <li><a href="https://github.com/caltechlibrary/dotpath">GitHub</a></li>
+</ul>
+</nav>
+<section>
+<h1 id="tutorial-using-the-dotpath-module-in-go">Tutorial: Using the
+<code>dotpath</code> Module in Go</h1>
+<p>The <code>dotpath</code> module in Go provides a convenient way to
+access nested data structures using dot-notated paths. This is
+particularly useful when working with JSON-like data or complex nested
+maps and slices. This tutorial will guide you through using the
+<code>dotpath</code> module, including example code and usage
+scenarios.</p>
+<h2 id="introduction">Introduction</h2>
+<p>The <code>dotpath</code> module includes two primary functions: -
+<code>GetDotpath(obj interface{}, path string) (interface{}, bool)</code>:
+Retrieves a value from a nested structure using a dot-notated path. -
+<code>HasDotpath(obj interface{}, path string) bool</code>: Checks if a
+given path exists in a nested structure.</p>
+<p>These functions allow you to easily navigate and query complex data
+structures.</p>
+<h2 id="setup">Setup</h2>
+<p>To use the <code>dotpath</code> module, you need to have it in your
+Go workspace.</p>
+<pre class="shell"><code>go get github.com/caltechlibrary/dotpath</code></pre>
+<p>You import the <code>dotpath</code> module with</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="st">&quot;github.com/caltechlibrary/dotpath&quot;</span></span></code></pre></div>
+<p>For this tutorial, we’ll assume you have the <code>dotpath</code>
+package available in your project directory.</p>
+<h2 id="example-data-structure">Example Data Structure</h2>
+<p>Let’s consider the following nested data structure, which we’ll use
+in our examples:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">:=</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;user&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;profile&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;name&quot;</span><span class="op">:</span>    <span class="st">&quot;Alice&quot;</span><span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;hobbies&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;reading&quot;</span><span class="op">,</span> <span class="st">&quot;hiking&quot;</span><span class="op">,</span> <span class="st">&quot;coding&quot;</span><span class="op">},</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">},</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;settings&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;notifications&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;email&quot;</span><span class="op">,</span> <span class="st">&quot;sms&quot;</span><span class="op">},</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;theme&quot;</span><span class="op">:</span>         <span class="st">&quot;dark&quot;</span><span class="op">,</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">},</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;stats&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;metric&quot;</span><span class="op">:</span> <span class="st">&quot;visits&quot;</span><span class="op">,</span> <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="dv">1000</span><span class="op">},</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;metric&quot;</span><span class="op">:</span> <span class="st">&quot;signups&quot;</span><span class="op">,</span> <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="dv">250</span><span class="op">},</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">},</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="using-getdotpath">Using <code>GetDotpath</code></h2>
+<p>The <code>GetDotpath</code> function allows you to retrieve values
+from a nested map or slice using a dot-notated path. Here’s how you can
+use it:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span> main</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="op">(</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;fmt&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;github.com/caltechlibrary/dotpath&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    data <span class="op">:=</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;user&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;profile&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;name&quot;</span><span class="op">:</span>    <span class="st">&quot;Alice&quot;</span><span class="op">,</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;hobbies&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;reading&quot;</span><span class="op">,</span> <span class="st">&quot;hiking&quot;</span><span class="op">,</span> <span class="st">&quot;coding&quot;</span><span class="op">},</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>            <span class="op">},</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;settings&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;notifications&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;email&quot;</span><span class="op">,</span> <span class="st">&quot;sms&quot;</span><span class="op">},</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;theme&quot;</span><span class="op">:</span>         <span class="st">&quot;dark&quot;</span><span class="op">,</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>            <span class="op">},</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">},</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;stats&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>            <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;metric&quot;</span><span class="op">:</span> <span class="st">&quot;visits&quot;</span><span class="op">,</span> <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="dv">1000</span><span class="op">},</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>            <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;metric&quot;</span><span class="op">:</span> <span class="st">&quot;signups&quot;</span><span class="op">,</span> <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="dv">250</span><span class="op">},</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="op">},</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Retrieve the user&#39;s name</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> value<span class="op">,</span> ok <span class="op">:=</span> dotpath<span class="op">.</span>GetDotpath<span class="op">(</span>data<span class="op">,</span> <span class="st">&quot;user.profile.name&quot;</span><span class="op">);</span> ok <span class="op">{</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;User&#39;s name:&quot;</span><span class="op">,</span> value<span class="op">)</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Path not found&quot;</span><span class="op">)</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Retrieve the second hobby</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> value<span class="op">,</span> ok <span class="op">:=</span> dotpath<span class="op">.</span>GetDotpath<span class="op">(</span>data<span class="op">,</span> <span class="st">&quot;user.profile.hobbies[1]&quot;</span><span class="op">);</span> ok <span class="op">{</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Second hobby:&quot;</span><span class="op">,</span> value<span class="op">)</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Path not found&quot;</span><span class="op">)</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Retrieve the value of signups</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> value<span class="op">,</span> ok <span class="op">:=</span> dotpath<span class="op">.</span>GetDotpath<span class="op">(</span>data<span class="op">,</span> <span class="st">&quot;stats[1].value&quot;</span><span class="op">);</span> ok <span class="op">{</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Signups value:&quot;</span><span class="op">,</span> value<span class="op">)</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Path not found&quot;</span><span class="op">)</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="explanation">Explanation</h3>
+<ul>
+<li><strong>Path Notation</strong>: Use dot notation to specify the
+path. For lists, use bracket notation with zero-based indices (e.g.,
+<code>hobbies[1]</code>).</li>
+<li><strong>Return Values</strong>: <code>GetDotpath</code> returns the
+value at the specified path and a boolean indicating success.</li>
+</ul>
+<h2 id="using-hasdotpath">Using <code>HasDotpath</code></h2>
+<p>The <code>HasDotpath</code> function checks if a given path exists in
+the nested structure. This is useful for validating paths before
+attempting to retrieve values.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span> main</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="op">(</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;fmt&quot;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;github.com/caltechlibrary/dotpath&quot;</span> <span class="co">// Adjust the import path as needed</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    data <span class="op">:=</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;user&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;profile&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;name&quot;</span><span class="op">:</span>    <span class="st">&quot;Alice&quot;</span><span class="op">,</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;hobbies&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;reading&quot;</span><span class="op">,</span> <span class="st">&quot;hiking&quot;</span><span class="op">,</span> <span class="st">&quot;coding&quot;</span><span class="op">},</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>            <span class="op">},</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;settings&quot;</span><span class="op">:</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;notifications&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;email&quot;</span><span class="op">,</span> <span class="st">&quot;sms&quot;</span><span class="op">},</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;theme&quot;</span><span class="op">:</span>         <span class="st">&quot;dark&quot;</span><span class="op">,</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>            <span class="op">},</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">},</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;stats&quot;</span><span class="op">:</span> <span class="op">[]</span><span class="kw">interface</span><span class="op">{}{</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>            <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;metric&quot;</span><span class="op">:</span> <span class="st">&quot;visits&quot;</span><span class="op">,</span> <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="dv">1000</span><span class="op">},</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>            <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="kw">interface</span><span class="op">{}{</span><span class="st">&quot;metric&quot;</span><span class="op">:</span> <span class="st">&quot;signups&quot;</span><span class="op">,</span> <span class="st">&quot;value&quot;</span><span class="op">:</span> <span class="dv">250</span><span class="op">},</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        <span class="op">},</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Check if the path to the user&#39;s name exists</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> dotpath<span class="op">.</span>HasDotpath<span class="op">(</span>data<span class="op">,</span> <span class="st">&quot;user.profile.name&quot;</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Path &#39;user.profile.name&#39; exists&quot;</span><span class="op">)</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Path &#39;user.profile.name&#39; does not exist&quot;</span><span class="op">)</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Check if the path to a non-existent key exists</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> dotpath<span class="op">.</span>HasDotpath<span class="op">(</span>data<span class="op">,</span> <span class="st">&quot;user.profile.age&quot;</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Path &#39;user.profile.age&#39; exists&quot;</span><span class="op">)</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;Path &#39;user.profile.age&#39; does not exist&quot;</span><span class="op">)</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="explanation-1">Explanation</h3>
+<ul>
+<li><strong>Path Validation</strong>: Use <code>HasDotpath</code> to
+check if a path exists before attempting to retrieve its value.</li>
+<li><strong>Return Value</strong>: <code>HasDotpath</code> returns
+<code>true</code> if the path exists, <code>false</code> otherwise.</li>
+</ul>
+</section>
+</body>
+</html>

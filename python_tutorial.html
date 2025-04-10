@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <title>dotpath</title>
+    <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<nav>
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="index.html">README</a></li>
+    <li><a href="LICENSE">LICENSE</a></li>
+    <li><a href="user_manual.html">User Manual</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="search.html">Search</a></li>
+    <li><a href="https://github.com/caltechlibrary/dotpath">GitHub</a></li>
+</ul>
+</nav>
+<section>
+<h1 id="tutorial-using-the-dotpath-module-in-python">Tutorial: Using the
+<code>dotpath</code> Module in Python</h1>
+<p>The <code>dotpath</code> module in Python provides a convenient way
+to access nested data structures using dot-notated paths. This is
+particularly useful when working with JSON-like data or complex nested
+dictionaries and lists. This tutorial will guide you through using the
+<code>dotpath</code> module, including example code and usage
+scenarios.</p>
+<h2 id="introduction">Introduction</h2>
+<p>The <code>dotpath</code> module includes two primary functions: -
+<code>getDotpath(obj, path)</code>: Retrieves a value from a nested
+structure using a dot-notated path. -
+<code>hasDotpath(obj, path)</code>: Checks if a given path exists in a
+nested structure.</p>
+<p>These functions allow you to easily navigate and query complex data
+structures.</p>
+<h2 id="setup">Setup</h2>
+<p>To use the <code>dotpath</code> module, you need to have it in your
+Python environment. For this tutorial, we’ll assume you have the
+<code>dotpath</code> module is available in your Python development
+environment via <code>vu</code> or other means.</p>
+<h2 id="example-data-structure">Example Data Structure</h2>
+<p>Let’s consider the following nested data structure, which we’ll use
+in our examples:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;user&quot;</span>: {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;profile&quot;</span>: {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Alice&quot;</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;hobbies&quot;</span>: [<span class="st">&quot;reading&quot;</span>, <span class="st">&quot;hiking&quot;</span>, <span class="st">&quot;coding&quot;</span>]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;settings&quot;</span>: {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;notifications&quot;</span>: [<span class="st">&quot;email&quot;</span>, <span class="st">&quot;sms&quot;</span>],</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;theme&quot;</span>: <span class="st">&quot;dark&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;stats&quot;</span>: [</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        {<span class="st">&quot;metric&quot;</span>: <span class="st">&quot;visits&quot;</span>, <span class="st">&quot;value&quot;</span>: <span class="dv">1000</span>},</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        {<span class="st">&quot;metric&quot;</span>: <span class="st">&quot;signups&quot;</span>, <span class="st">&quot;value&quot;</span>: <span class="dv">250</span>}</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="using-getdotpath">Using <code>getDotpath</code></h2>
+<p>The <code>getDotpath</code> function allows you to retrieve values
+from a nested dictionary or list using a dot-notated path. Here’s how
+you can use it:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotpath <span class="im">import</span> getDotpath</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;user&quot;</span>: {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;profile&quot;</span>: {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Alice&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;hobbies&quot;</span>: [<span class="st">&quot;reading&quot;</span>, <span class="st">&quot;hiking&quot;</span>, <span class="st">&quot;coding&quot;</span>]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;settings&quot;</span>: {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;notifications&quot;</span>: [<span class="st">&quot;email&quot;</span>, <span class="st">&quot;sms&quot;</span>],</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;theme&quot;</span>: <span class="st">&quot;dark&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;stats&quot;</span>: [</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        {<span class="st">&quot;metric&quot;</span>: <span class="st">&quot;visits&quot;</span>, <span class="st">&quot;value&quot;</span>: <span class="dv">1000</span>},</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        {<span class="st">&quot;metric&quot;</span>: <span class="st">&quot;signups&quot;</span>, <span class="st">&quot;value&quot;</span>: <span class="dv">250</span>}</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve the user&#39;s name</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>result, ok <span class="op">=</span> getDotpath(data, <span class="st">&quot;user.profile.name&quot;</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> ok:</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;User&#39;s name:&quot;</span>, result)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Path not found&quot;</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve the second hobby</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>result, ok <span class="op">=</span> getDotpath(data, <span class="st">&quot;user.profile.hobbies[1]&quot;</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> ok:</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Second hobby:&quot;</span>, result)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Path not found&quot;</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve the value of signups</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>result, ok <span class="op">=</span> getDotpath(data, <span class="st">&quot;stats[1].value&quot;</span>)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> ok:</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Signups value:&quot;</span>, result)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Path not found&quot;</span>)</span></code></pre></div>
+<h3 id="explanation">Explanation</h3>
+<ul>
+<li><strong>Path Notation</strong>: Use dot notation to specify the
+path. For lists, use bracket notation with zero-based indices (e.g.,
+<code>hobbies[1]</code>).</li>
+<li><strong>Return Values</strong>: <code>getDotpath</code> returns the
+value at the specified path and a boolean indicating success.</li>
+</ul>
+<h2 id="using-hasdotpath">Using <code>hasDotpath</code></h2>
+<p>The <code>hasDotpath</code> function checks if a given path exists in
+the nested structure. This is useful for validating paths before
+attempting to retrieve values.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotpath <span class="im">import</span> hasDotpath</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;user&quot;</span>: {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;profile&quot;</span>: {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Alice&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;hobbies&quot;</span>: [<span class="st">&quot;reading&quot;</span>, <span class="st">&quot;hiking&quot;</span>, <span class="st">&quot;coding&quot;</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;settings&quot;</span>: {</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;notifications&quot;</span>: [<span class="st">&quot;email&quot;</span>, <span class="st">&quot;sms&quot;</span>],</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;theme&quot;</span>: <span class="st">&quot;dark&quot;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;stats&quot;</span>: [</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        {<span class="st">&quot;metric&quot;</span>: <span class="st">&quot;visits&quot;</span>, <span class="st">&quot;value&quot;</span>: <span class="dv">1000</span>},</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        {<span class="st">&quot;metric&quot;</span>: <span class="st">&quot;signups&quot;</span>, <span class="st">&quot;value&quot;</span>: <span class="dv">250</span>}</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if the path to the user&#39;s name exists</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> hasDotpath(data, <span class="st">&quot;user.profile.name&quot;</span>):</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Path &#39;user.profile.name&#39; exists&quot;</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Path &#39;user.profile.name&#39; does not exist&quot;</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if the path to a non-existent key exists</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> hasDotpath(data, <span class="st">&quot;user.profile.age&quot;</span>):</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Path &#39;user.profile.age&#39; exists&quot;</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Path &#39;user.profile.age&#39; does not exist&quot;</span>)</span></code></pre></div>
+<h3 id="explanation-1">Explanation</h3>
+<ul>
+<li><strong>Path Validation</strong>: Use <code>hasDotpath</code> to
+check if a path exists before attempting to retrieve its value.</li>
+<li><strong>Return Value</strong>: <code>hasDotpath</code> returns
+<code>True</code> if the path exists, <code>False</code> otherwise.</li>
+</ul>
+</section>
+</body>
+</html>
