@@ -44,7 +44,7 @@ test: $(PACKAGE)
 	go test
 
 website:
-	./mk_website.py
+	make -f website.mak
 
 status:
 	git status
