@@ -1,19 +1,29 @@
+
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
+type: software
 title: dotpath
+abstract: "A a small collection of Go, Python and TypeScript modules for working with maps and objects using
+a dot path notation similar to the one used with [jq](https://jqlang.org)."
 authors:
   - family-names: Doiel
     given-names: Robert
     orcid: https://orcid.org/0000-0003-0900-6903
-abstract: A go package for evaluating dot path notation and JSON objects to extract values.
+    email: rsdoiel@caltech.edu
+
+contacts:
+  - family-names: 
+    given-names: 
+
 repository-code: "https://github.com/caltechlibrary/dotpath"
-type: software
-version: 0.0.4
-license-url: "https://data.caltech.edu/license"
+version: 0.1.0
+date-released: 2025-04-10
+
+license-url: "https://caltechlibrary.github.io/dotpath/LICENSE"
 keywords:
-  - GitHub
   - metadata
   - data
   - software
   - json
-date-released: 2022-08-17
+  - dot notation
+

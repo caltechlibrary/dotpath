@@ -1,3 +1,3 @@
 module github.com/caltechlibrary/dotpath
 
-go 1.16
+go 1.24

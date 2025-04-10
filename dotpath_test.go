@@ -2,9 +2,9 @@
 // dotpath.go package provides a convient way of mapping JSON dot path notation
 // to a decoded JSON datatype (e.g. map, array)
 //
-// @author R. S. Doiel, <rsdoiel@library.caltech.edu>
+// @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2022, Caltech
+// Copyright (c) 2025, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -517,5 +517,88 @@ func TestLinkedData(t *testing.T) {
 	if expected != got {
 		t.Errorf("expected %q, got %q", expected, got)
 		t.FailNow()
+	}
+}
+
+func TestGetDotpath(t *testing.T) {
+	data := map[string]interface{}{
+		"user": map[string]interface{}{
+			"profile": map[string]interface{}{
+				"name":    "Alice",
+				"hobbies": []interface{}{"reading", "hiking", "coding"},
+			},
+			"settings": map[string]interface{}{
+				"notifications": []interface{}{"email", "sms"},
+				"theme":         "dark",
+			},
+		},
+		"stats": []interface{}{
+			map[string]interface{}{"metric": "visits", "value": 1000},
+			map[string]interface{}{"metric": "signups", "value": 250},
+		},
+	}
+
+	testCases := []struct {
+		path     string
+		expected interface{}
+	}{
+		{"user.profile.name", "Alice"},
+		{"user.profile.hobbies[1]", "hiking"},
+		{"user.settings.notifications[0]", "email"},
+		{"user.settings.theme", "dark"},
+		{"stats[1].value", 250},
+		{"stats[0].metric", "visits"},
+		{"user.profile.age", nil},       // Non-existent key
+		{"stats[2].metric", nil},        // Index out of range
+	}
+
+	for _, tc := range testCases {
+		result, ok := GetDotpath(data, tc.path)
+		if result != tc.expected || (tc.expected == nil && ok) {
+			t.Errorf("Test failed for path '%s': expected %v, got %v", tc.path, tc.expected, result)
+		}
+		t.Logf("Test passed for path '%s': %v, OK: %v", tc.path, result, ok)
+	}
+}
+
+func TestHasDotpath(t *testing.T) {
+	data := map[string]interface{}{
+		"user": map[string]interface{}{
+			"profile": map[string]interface{}{
+				"name":    "Alice",
+				"hobbies": []interface{}{"reading", "hiking", "coding"},
+			},
+			"settings": map[string]interface{}{
+				"notifications": []interface{}{"email", "sms"},
+				"theme":         "dark",
+			},
+		},
+		"stats": []interface{}{
+			map[string]interface{}{"metric": "visits", "value": 1000},
+			map[string]interface{}{"metric": "signups", "value": 250},
+		},
+	}
+
+	testCases := []struct {
+		path     string
+		expected bool
+	}{
+		{"user.profile.name", true},
+		{"user.profile.hobbies[1]", true},
+		{"user.settings.notifications[0]", true},
+		{"user.settings.theme", true},
+		{"stats[1].value", true},
+		{"stats[0].metric", true},
+		{"user.profile.age", false},      // Non-existent key
+		{"stats[2].metric", false},       // Index out of range
+		{"user.profile.hobbies[3]", false}, // Index out of range
+	}
+
+	for _, tc := range testCases {
+		result := HasDotpath(data, tc.path)
+		if result != tc.expected {
+			t.Errorf("Test failed for path '%s': expected %v, got %v", tc.path, tc.expected, result)
+		}
+		t.Logf("Test passed for path '%s': OK: %v", tc.path, result)
 	}
 }

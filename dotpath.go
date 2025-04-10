@@ -2,9 +2,9 @@
 // dotpath.go package provides a convient way of mapping JSON dot path notation
 // to a nested map structure.
 //
-// @author R. S. Doiel, <rsdoiel@library.caltech.edu>
+// @author R. S. Doiel, <rsdoiel@caltech.edu>
 //
-// Copyright (c) 2022, Caltech
+// Copyright (c) 2025, Caltech
 // All rights not granted herein are expressly reserved by Caltech.
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,6 +20,7 @@
 package dotpath
 
 import (
+	"regexp"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -187,4 +188,55 @@ func findInArray(p []string, a []interface{}) (interface{}, error) {
 		return find(p[1:], a[i])
 	}
 	return nil, fmt.Errorf("value not found")
+}
+
+
+// GetDotpath fetches a value from a nested map or struct using a dot-notated path expression.
+// Supports list indices in the path with bracket notation.
+func GetDotpath(obj interface{}, path string) (interface{}, bool) {
+	pattern := regexp.MustCompile(`(\w+)|\[(\d+)\]`)
+	matches := pattern.FindAllStringSubmatch(path, -1)
+
+	current := obj
+
+	for _, match := range matches {
+		dictKey := match[1]
+		listIndex := match[2]
+
+		if dictKey != "" {
+			// Handle map key
+			if m, ok := current.(map[string]interface{}); ok {
+				if val, exists := m[dictKey]; exists {
+					current = val
+				} else {
+					return nil, false
+				}
+			} else {
+				return nil, false
+			}
+		} else if listIndex != "" {
+			// Handle list index
+			index, err := strconv.Atoi(listIndex)
+			if err != nil {
+				return nil, false
+			}
+			if l, ok := current.([]interface{}); ok {
+				if index >= 0 && index < len(l) {
+					current = l[index]
+				} else {
+					return nil, false
+				}
+			} else {
+				return nil, false
+			}
+		}
+	}
+
+	return current, true
+}
+
+// HasDotpath checks if a path exists in a nested map or struct using a dot-notated path expression.
+func HasDotpath(obj interface{}, path string) bool {
+	_, ok := GetDotpath(obj, path)
+	return ok
 }
